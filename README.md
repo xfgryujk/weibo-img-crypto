@@ -7,3 +7,16 @@
 ```javascript
 javascript:fetch('https://raw.githubusercontent.com/xfgryujk/weibo-img-crypto/master/weibo-img-crypto.js').then(res => res.text(), e => alert('载入失败：' + e)).then(res => {let script = document.createElement('script'); script.innerHTML = res; document.body.appendChild(script)})
 ```
+
+## 效果
+加密后：
+
+![加密后](https://github.com/xfgryujk/weibo-img-crypto/blob/master/encrypted.jpg)
+
+解密后：
+
+![解密后](https://github.com/xfgryujk/weibo-img-crypto/blob/master/decrypted.png)
+
+原图：
+
+![原图](https://github.com/xfgryujk/weibo-img-crypto/blob/master/origin.jpg)
