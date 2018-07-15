@@ -1,36 +1,35 @@
 window.isWbImgCryptoLoaded || (function () {
   window.isWbImgCryptoLoaded = true
 
-  // 抄Java的Random
+  // 从谷歌V8引擎抄来的 https://github.com/v8/v8/blob/dae6dfe08ba9810abbe7eee81f7c58e999ae8525/src/math.js#L144
   class Random {
     constructor (seed) {
-      this._seed = seed
-      this._multiplier = 0x5DEECE66D
-      this._addend = 0xB
-      this._mask = (1 << 16) - 1
-    }
-
-    next (bits) {
-      let nextseed = (this._seed * this._multiplier + this._addend) & this._mask
-      this._seed = nextseed
-      return nextseed >> (16 - bits)
-    }
-
-    nextInt (bound) {
-      let r = this.next(15)
-      let m = bound - 1
-      if ((bound & m) === 0) { // i.e., bound is a power of 2
-        r = (bound * r) >> 15
-      } else {
-        for (let u = r; u - (r = u % bound) + m < 0; u = this.next(15));
+      if (seed === undefined) {
+        seed = new Date().getTime()
       }
-      return r
+      this._rngstate = [seed & 0x0000FFFF, seed >>> 16]
+    }
+
+    // 返回[0, 1)
+    random () {
+      let r0 = (Math.imul(18030, this._rngstate[0] & 0xFFFF) + (this._rngstate[0] >>> 16)) | 0
+      this._rngstate[0] = r0
+      let r1 = (Math.imul(36969, this._rngstate[1] & 0xFFFF) + (this._rngstate[1] >>> 16)) | 0
+      this._rngstate[1] = r1
+      let x = ((r0 << 16) + (r1 & 0xFFFF)) | 0
+      // Division by 0x100000000 through multiplication by reciprocal.
+      return (x < 0 ? (x + 0x100000000) : x) * 2.3283064365386962890625e-10
+    }
+
+    // 返回[min, max]的整数
+    randint (min, max) {
+      return Math.floor(min + this.random() * (max - min + 1))
     }
   }
 
-  // 生成不重复的序列
+  // 生成[0, length)的随机序列，每次调用next()返回和之前不重复的值，直到[0, length)用完
   class RandomSequence {
-    constructor (seed, length) {
+    constructor (length, seed) {
       this._rng = new Random(seed)
       this._list = new Array(length)
       for (let i = 0; i < length; i++) {
@@ -43,7 +42,7 @@ window.isWbImgCryptoLoaded || (function () {
       if (this._nextMin >= this._list.length) {
         this._nextMin = 0
       }
-      let index = this._nextMin + this._rng.nextInt(this._list.length - this._nextMin)
+      let index = this._rng.randint(this._nextMin, this._list.length - 1)
       let result = this._list[index]
       this._list[index] = this._list[this._nextMin]
       this._list[this._nextMin] = result
@@ -52,11 +51,11 @@ window.isWbImgCryptoLoaded || (function () {
     }
   }
 
-  const RANDOM_SEED = 114514
+  const DEFAULT_SEED = 114514
 
   function encrypt (data) {
     let nRgbs = data.length / 4 * 3
-    let seq = new RandomSequence(RANDOM_SEED, nRgbs)
+    let seq = new RandomSequence(nRgbs, window.randomSeed || DEFAULT_SEED)
     let buffer = new Uint8ClampedArray(nRgbs)
     // 每一个RGB值放到新的位置
     for (let i = 0; i < data.length; i += 4) {
@@ -79,7 +78,7 @@ window.isWbImgCryptoLoaded || (function () {
       buffer[j + 1] = data[i + 1]
       buffer[j + 2] = data[i + 2]
     }
-    let seq = new RandomSequence(RANDOM_SEED, nRgbs)
+    let seq = new RandomSequence(nRgbs, window.randomSeed || DEFAULT_SEED)
     // 取新的位置，放回原来的位置
     for (let i = 0; i < data.length; i += 4) {
       data[i] = buffer[seq.next()]
@@ -141,9 +140,7 @@ window.isWbImgCryptoLoaded || (function () {
         originImg.src = canvas.toDataURL()
       }
 
-      if (originImg.src.startsWith('data:')) {
-        img.src = originImg.src
-      } else {
+      if (!originImg.src.startsWith('data:')) { // 如果是'data:'开头说明已经解密过了
         // 防缓存
         img.src = originImg.src + (originImg.src.indexOf('?') === -1 ? '?_t=' : '&_t=') + new Date().getTime()
       }

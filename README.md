@@ -10,6 +10,18 @@ javascript:fetch('https://raw.githubusercontent.com/xfgryujk/weibo-img-crypto/ma
 
 也可以按 `Ctrl + Shift + J` 打开控制台，在控制台输入。也可以将这些代码作为网址添加到书签/收藏夹，能更快使用
 
+### 高级
+
+加密的原理是把 RGB 数据随机移动到一个新位置，所以加密解密时的随机种子必须一样。默认的随机种子是 `114514`，可以使用以下代码设置随机种子：
+
+```javascript
+javascript:randomSeed = <新的随机种子>
+```
+
+由于 JPEG 是有损压缩，解密后的图片有高频噪声，不过可以被人眼自动过滤。理论上如果数据无损，解密后的图片和原图一样<del>（都怪渣浪不用 PNG）</del>
+
+### 兼容性
+
 目前不支持 GIF 图，以后可能支持
 
 只在 Chrome、Edge 浏览器测试过，不保证支持其他浏览器<del>（IE 是什么？我可不知道）</del>
