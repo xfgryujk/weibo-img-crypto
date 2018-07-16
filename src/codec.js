@@ -1,6 +1,5 @@
 import {RandomSequence} from './random'
 
-
 export const DEFAULT_SEED = 114514
 
 export function encrypt (data) {

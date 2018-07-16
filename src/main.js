@@ -1,6 +1,5 @@
 import {initHooks} from './hooks'
 
-
 function main () {
   initHooks()
 }

@@ -4,7 +4,7 @@ export class Random {
     if (seed === undefined) {
       seed = new Date().getTime()
     }
-    this._rngstate = [seed & 0x0000FFFF, seed >>> 16]
+    this._rngstate = [seed & 0xFFFF, seed >>> 16]
   }
 
   // 返回[0, 1)
