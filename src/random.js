@@ -1,9 +1,6 @@
 // 从谷歌V8引擎抄来的 https://github.com/v8/v8/blob/dae6dfe08ba9810abbe7eee81f7c58e999ae8525/src/math.js#L144
 export class Random {
-  constructor (seed) {
-    if (seed === undefined) {
-      seed = new Date().getTime()
-    }
+  constructor (seed = new Date().getTime()) {
     this._rngstate = [seed & 0xFFFF, seed >>> 16]
   }
 

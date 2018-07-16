@@ -20,8 +20,9 @@ function hookUpload (args) {
   }
 
   // Hook微博HTTP请求函数，用来加密和去水印
-  let originalIjax = window.STK.namespace.v6home.core.io.ijax
-  window.STK.namespace.v6home.core.io.ijax = function (args) {
+  let root = window.STK.namespace ? window.STK.namespace.v6home : window.STK // 用来兼容查看原图页面
+  let originalIjax = root.core.io.ijax
+  root.core.io.ijax = function (args) {
     if (!args.url.endsWith('/pic_upload.php') || isUploadingGif) { // 暂时不支持GIF
       return originalIjax(args)
     }
