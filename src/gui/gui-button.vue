@@ -1,5 +1,5 @@
 <template>
-  <a href="javascript:void(0);" title="发色图" class="S_txt1" :style="style">
+  <a href="#" @click.prevent="$emit('click', $event)" title="发色图" class="S_txt1" :style="style">
     <img src="https://ww1.sinaimg.cn/mw690/be15a4ddjw8fbet7h4rpoj209z0c7q39.jpg" width="20px" height="20px">
     发色图
   </a>
