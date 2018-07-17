@@ -28,15 +28,15 @@ javascript:fetch('https://raw.githubusercontent.com/xfgryujk/weibo-img-crypto/ma
 ## 效果
 加密后：
 
-![加密后](https://github.com/xfgryujk/weibo-img-crypto/blob/master/encrypted.jpg)
+![加密后](https://github.com/xfgryujk/weibo-img-crypto/blob/master/demo/encrypted.jpg)
 
 解密后：
 
-![解密后](https://github.com/xfgryujk/weibo-img-crypto/blob/master/decrypted.png)
+![解密后](https://github.com/xfgryujk/weibo-img-crypto/blob/master/demo/decrypted.png)
 
 原图：
 
-![原图](https://github.com/xfgryujk/weibo-img-crypto/blob/master/origin.jpg)
+![原图](https://github.com/xfgryujk/weibo-img-crypto/blob/master/demo/origin.jpg)
 
 ## FA♂Q
 ### 为什么不支持手机端？
