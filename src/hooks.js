@@ -1,4 +1,5 @@
 import {encrypt, decrypt} from './codec'
+import {getConfig} from './config'
 
 export function initHooks () {
   hookUpload()
@@ -9,7 +10,7 @@ let canvas = document.createElement('canvas')
 let ctx = canvas.getContext('2d')
 
 // Hook上传图片相关函数
-function hookUpload (args) {
+function hookUpload () {
   let isUploadingGif = false
 
   // Hook读取图片函数，用来判断MIME type
@@ -23,7 +24,9 @@ function hookUpload (args) {
   let root = window.STK.namespace ? window.STK.namespace.v6home : window.STK // 用来兼容查看原图页面
   let originalIjax = root.core.io.ijax
   root.core.io.ijax = function (args) {
-    if (!args.url.endsWith('/pic_upload.php') || isUploadingGif) { // 暂时不支持GIF
+    if (!getConfig().enableEncryption
+        || !args.url.endsWith('/pic_upload.php')
+        || isUploadingGif) { // 暂时不支持GIF
       return originalIjax(args)
     }
 
@@ -49,10 +52,12 @@ function hookUpload (args) {
       ctx.putImageData(imgData, 0, 0)
 
       // 去水印
-      args.args.url = 0
-      args.args.markpos = ''
-      args.args.logo = ''
-      args.args.nick = 0
+      if (getConfig().noWaterMark) {
+        args.args.url = 0
+        args.args.markpos = ''
+        args.args.logo = ''
+        args.args.nick = 0
+      }
       // 替换图片
       imgDataInput.value = canvas.toDataURL().split(',')[1]
       handle.abort = originalIjax(args).abort
@@ -65,12 +70,10 @@ function hookUpload (args) {
 // 监听右键菜单
 function hookContextMenu () {
   document.addEventListener('contextmenu', event => {
-    if (event.target instanceof window.Image) {
+    if (getConfig().enableDecryption
+        && event.target instanceof window.Image) {
       // event.preventDefault() // 为了右键保存图片这里先注释掉了
       let originImg = event.target
-      if (!(originImg instanceof window.Image)) {
-        return
-      }
 
       // 跨域
       let img = new window.Image()

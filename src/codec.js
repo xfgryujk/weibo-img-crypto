@@ -1,10 +1,9 @@
 import {RandomSequence} from './random'
-
-export const DEFAULT_SEED = 114514
+import {getConfig} from './config'
 
 export function encrypt (data) {
   let nRgbs = data.length / 4 * 3
-  let seq = new RandomSequence(nRgbs, window.randomSeed || DEFAULT_SEED)
+  let seq = new RandomSequence(nRgbs, getConfig().randomSeed)
   let buffer = new Uint8ClampedArray(nRgbs)
   // 每一个RGB值放到新的位置
   for (let i = 0; i < data.length; i += 4) {
@@ -27,7 +26,7 @@ export function decrypt (data) {
     buffer[j + 1] = data[i + 1]
     buffer[j + 2] = data[i + 2]
   }
-  let seq = new RandomSequence(nRgbs, window.randomSeed || DEFAULT_SEED)
+  let seq = new RandomSequence(nRgbs, getConfig().randomSeed)
   // 取新的位置，放回原来的位置
   for (let i = 0; i < data.length; i += 4) {
     data[i] = buffer[seq.next()]
