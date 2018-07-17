@@ -6,7 +6,7 @@
       </a>
     </el-tooltip>
 
-    <el-dialog title="weibo-img-crypto" :visible.sync="dialogVisible">
+    <el-dialog title="weibo-img-crypto v1.1.1" :visible.sync="dialogVisible">
       <el-form :model="form" label-width="100px">
         <el-form-item label="加密">
           <el-switch v-model="form.enableEncryption"></el-switch>
@@ -21,6 +21,9 @@
           <el-input v-model="form.randomSeed" type="number"></el-input>
         </el-form-item>
       </el-form>
+      <p>
+        有了<a href="https://greasyfork.org/zh-CN/scripts/370359-weibo-img-crypto" target="_blank">油猴脚本</a>，能更快使用 weibo-img-crypto，详情见 <a href="https://github.com/xfgryujk/weibo-img-crypto" target="_blank">GitHub 库 readme</a>
+      </p>
 
       <span slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible = false">取 消</el-button>
