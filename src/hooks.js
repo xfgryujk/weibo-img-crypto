@@ -1,3 +1,4 @@
+import { Notification } from 'element-ui'
 import {encrypt, decrypt} from './codec'
 import {getConfig} from './config'
 
@@ -24,9 +25,9 @@ function hookUpload () {
   let root = window.STK.namespace ? window.STK.namespace.v6home : window.STK // 用来兼容查看原图页面
   let originalIjax = root.core.io.ijax
   root.core.io.ijax = function (args) {
-    if (!getConfig().enableEncryption
-        || !args.url.endsWith('/pic_upload.php')
-        || isUploadingGif) { // 暂时不支持GIF
+    if (!getConfig().enableEncryption ||
+        !args.url.endsWith('/pic_upload.php') ||
+        isUploadingGif) { // 暂时不支持GIF
       return originalIjax(args)
     }
 
@@ -70,15 +71,20 @@ function hookUpload () {
 // 监听右键菜单
 function hookContextMenu () {
   document.addEventListener('contextmenu', event => {
-    if (getConfig().enableDecryption
-        && event.target instanceof window.Image) {
+    if (getConfig().enableDecryption &&
+        event.target instanceof window.Image) {
       // event.preventDefault() // 为了右键保存图片这里先注释掉了
       let originImg = event.target
 
       // 跨域
       let img = new window.Image()
       img.crossOrigin = 'anonymous'
-      img.onerror = () => window.alert('载入图片失败，可能是跨域问题？')
+      img.onerror = () => Notification.error({
+        title: '解密图片',
+        message: '载入图片失败，可能是跨域问题？',
+        position: 'bottom-left',
+        duration: 3000
+      })
       img.onload = () => {
         [canvas.width, canvas.height] = [img.width, img.height]
         ctx.drawImage(img, 0, 0)

@@ -2,7 +2,7 @@
 自动加密解密微博上传的图片
 
 ## 如何使用
-在浏览器地址栏输入以下代码，上传图片时就会自动加密，在图片上点击鼠标右键就会自动解密。注意前面的 "`javascript:`" 必须手动输入，不能复制粘贴，否则会被浏览器自动去掉。执行成功后，点击微博文本框下面的北极熊 ~~（天哥哥）~~ 按钮可以打开设置界面
+在浏览器地址栏输入以下代码，上传图片时就会自动加密，在图片上点击鼠标右键就会自动解密。注意前面的 "`javascript:`" 必须手动输入，不能复制粘贴，否则会被浏览器自动去掉。执行成功后，点击左下角的北极熊 ~~（天哥哥）~~ 按钮可以打开设置界面
 
 ```javascript
 javascript:fetch('https://raw.githubusercontent.com/xfgryujk/weibo-img-crypto/master/weibo-img-crypto.js').then(res => res.text(), e => alert('载入失败：' + e)).then(res => {let script = document.createElement('script'); script.innerHTML = res; document.body.appendChild(script)})

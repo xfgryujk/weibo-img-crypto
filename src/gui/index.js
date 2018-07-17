@@ -7,20 +7,10 @@ export function initGui () {
 
 function addButton () {
   let button = document.createElement('a')
-  let parent = document.querySelector('.func_area')
-  // 兼容查看原图页面
-  let isButtonFloat = !parent
-  if (isButtonFloat) {
-    parent = document.body
-  }
-  parent.appendChild(button)
+  document.body.appendChild(button)
   /* eslint-disable no-new */
   new Vue({
     el: button,
-    render: h => h(Gui, {
-      props: {
-        isButtonFloat
-      }
-    })
+    render: h => h(Gui)
   })
 }
