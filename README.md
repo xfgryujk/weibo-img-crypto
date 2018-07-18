@@ -60,6 +60,4 @@ javascript:fetch('https://raw.githubusercontent.com/xfgryujk/weibo-img-crypto/ma
 作者的恶趣味，自行百度
 
 ## TODO
-* 图片过大的提示和自动缩小
-* 解密后自动高斯模糊（或中值滤波？）消除噪声
 * 分块加密防止 JPEG 压缩

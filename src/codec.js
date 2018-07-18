@@ -1,6 +1,7 @@
-import { Notification } from 'element-ui'
+import {Notification} from 'element-ui'
 import {RandomSequence} from './random'
 import {getConfig} from './config'
+import {gaussianBlur, medianBlur} from './imgproc'
 
 let canvas = document.createElement('canvas')
 let ctx = canvas.getContext('2d')
@@ -10,7 +11,7 @@ export function encrypt (img) {
   [canvas.width, canvas.height] = [img.width, img.height]
   ctx.drawImage(img, 0, 0)
   let imgData = ctx.getImageData(0, 0, img.width, img.height)
-  Codec.getCodec().encrypt(imgData.data)
+  Codec.getCodec().encrypt(imgData)
   ctx.putImageData(imgData, 0, 0)
   return canvas.toDataURL()
 }
@@ -37,9 +38,16 @@ export async function decrypt (originImg) {
   [canvas.width, canvas.height] = [img.width, img.height]
   ctx.drawImage(img, 0, 0)
   let imgData = ctx.getImageData(0, 0, canvas.width, canvas.height)
-  Codec.getCodec().decrypt(imgData.data)
+  Codec.getCodec().decrypt(imgData)
+  postProcess(imgData)
   ctx.putImageData(imgData, 0, 0)
   originImg.src = canvas.toDataURL()
+}
+
+// 解密后的处理，比如滤波
+function postProcess (imgData) {
+  // gaussianBlur(imgData)
+  medianBlur(imgData)
 }
 
 function getImgSrcToDecrypt (originImg) {
@@ -65,8 +73,8 @@ async function loadImage (src, isCrossOrigin = false) {
 }
 
 class Codec {
-  encrypt (data) {}
-  decrypt (data) {}
+  encrypt (imgData) {}
+  decrypt (imgData) {}
 }
 Codec._codecs = {}
 Codec.getCodec = function (name) {
@@ -76,14 +84,15 @@ Codec.getCodec = function (name) {
 // 反色
 class InvertRgbCodec {
   // TODO 实现
-  encrypt (data) {}
-  decrypt (data) {}
+  encrypt (imgData) {}
+  decrypt (imgData) {}
 }
 Codec._codecs.InvertRgbCodec = new InvertRgbCodec()
 
 // 将RGB值随机移动
 class MoveRgbCodec {
-  encrypt (data) {
+  encrypt (imgData) {
+    let data = imgData.data
     let nRgbs = data.length / 4 * 3
     let seq = new RandomSequence(nRgbs, getConfig().randomSeed)
     let buffer = new Uint8ClampedArray(nRgbs)
@@ -100,7 +109,8 @@ class MoveRgbCodec {
     }
   }
 
-  decrypt (data) {
+  decrypt (imgData) {
+    let data = imgData.data
     let nRgbs = data.length / 4 * 3
     let buffer = new Uint8ClampedArray(nRgbs)
     for (let i = 0, j = 0; i < data.length; i += 4, j += 3) {
@@ -122,7 +132,7 @@ Codec._codecs.MoveRgbCodec = new MoveRgbCodec()
 // 将8x8像素块随机移动
 class Move8x8BlockCodec {
   // TODO 实现
-  encrypt (data) {}
-  decrypt (data) {}
+  encrypt (imgData) {}
+  decrypt (imgData) {}
 }
 Codec._codecs.Move8x8BlockCodec = new Move8x8BlockCodec()
