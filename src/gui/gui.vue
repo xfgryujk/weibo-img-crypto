@@ -24,6 +24,13 @@
 
         <el-tab-pane label="高级">
           <el-form label-width="100px">
+            <el-form-item label="算法">
+              <el-select v-model="form.codecName" placeholder="无">
+                <el-option label="反色" value="InvertRgbCodec"></el-option>
+                <el-option label="随机移动RGB值" value="MoveRgbCodec"></el-option>
+                <el-option label="随机移动8x8像素块" value="Move8x8BlockCodec"></el-option>
+              </el-select>
+            </el-form-item>
             <el-form-item label="随机种子">
               <el-input v-model="form.randomSeed" type="number"></el-input>
             </el-form-item>

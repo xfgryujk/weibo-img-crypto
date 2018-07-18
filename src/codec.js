@@ -11,7 +11,7 @@ export function encrypt (img) {
   [canvas.width, canvas.height] = [img.width, img.height]
   ctx.drawImage(img, 0, 0)
   let imgData = ctx.getImageData(0, 0, img.width, img.height)
-  Codec.getCodec().encrypt(imgData)
+  Codec.getCodec(getConfig().codecName).encrypt(imgData)
   ctx.putImageData(imgData, 0, 0)
   return canvas.toDataURL()
 }
@@ -38,7 +38,7 @@ export async function decrypt (originImg) {
   [canvas.width, canvas.height] = [img.width, img.height]
   ctx.drawImage(img, 0, 0)
   let imgData = ctx.getImageData(0, 0, canvas.width, canvas.height)
-  Codec.getCodec().decrypt(imgData)
+  Codec.getCodec(getConfig().codecName).decrypt(imgData)
   postProcess(imgData)
   ctx.putImageData(imgData, 0, 0)
   originImg.src = canvas.toDataURL()
@@ -89,9 +89,16 @@ Codec.getCodec = function (name) {
 
 // 反色
 class InvertRgbCodec {
-  // TODO 实现
-  encrypt (imgData) {}
-  decrypt (imgData) {}
+  encrypt (imgData) { this._invertColor(imgData) }
+  decrypt (imgData) { this._invertColor(imgData) }
+  _invertColor (imgData) {
+    let data = imgData.data
+    for (let i = 0; i < data.length; i += 4) {
+      data[i] = ~data[i] & 0xFF
+      data[i + 1] = ~data[i + 1] & 0xFF
+      data[i + 2] = ~data[i + 2] & 0xFF
+    }
+  }
 }
 Codec._codecs.InvertRgbCodec = new InvertRgbCodec()
 
