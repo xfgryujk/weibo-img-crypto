@@ -22,9 +22,7 @@ export async function decrypt (originImg) {
   }
   let img
   try {
-    // 防缓存
-    let src = originImg.src + (originImg.src.indexOf('?') === -1 ? '?_t=' : '&_t=') + new Date().getTime()
-    img = await loadImage(src, true)
+    img = await loadImage(getImgSrcToDecrypt(originImg), true)
   } catch (e) {
     Notification.error({
       title: '解密图片',
@@ -44,13 +42,23 @@ export async function decrypt (originImg) {
   originImg.src = canvas.toDataURL()
 }
 
+function getImgSrcToDecrypt (originImg) {
+  // 获取原图地址，防止微博缩小图片尺寸导致解密失败
+  const IMG_URL_REG = /^(https?:\/\/wx\d+\.sinaimg\.cn\/)mw\d+(\/.*)$/i
+  let match = IMG_URL_REG.exec(originImg.src)
+  let src = match ? `${match[1]}large${match[2]}` : originImg.src
+  // 防缓存，为了跨域
+  src += (originImg.src.indexOf('?') === -1 ? '?_t=' : '&_t=') + new Date().getTime()
+  return src
+}
+
 async function loadImage (src, isCrossOrigin = false) {
   let img = new window.Image()
   if (isCrossOrigin) {
     img.crossOrigin = 'anonymous'
   }
   return new Promise((resolve, reject) => {
-    img.onerror = reject
+    img.onerror = () => reject(new Error('载入图片失败'))
     img.onload = () => resolve(img)
     img.src = src
   })
@@ -91,7 +99,7 @@ class MoveRgbCodec {
       data[i + 2] = buffer[j + 2]
     }
   }
-  
+
   decrypt (data) {
     let nRgbs = data.length / 4 * 3
     let buffer = new Uint8ClampedArray(nRgbs)

@@ -27,8 +27,6 @@ javascript:fetch('https://raw.githubusercontent.com/xfgryujk/weibo-img-crypto/ma
 ## 其他要注意的
 如果加了水印，解密后的图片会有杂色
 
-如果原图太大了分辨率会被改变导致解密失败，可以查看原图后再解密
-
 ## 效果
 加密后：
 
