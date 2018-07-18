@@ -11,7 +11,8 @@ export function encrypt (img) {
   [canvas.width, canvas.height] = [img.width, img.height]
   ctx.drawImage(img, 0, 0)
   let imgData = ctx.getImageData(0, 0, img.width, img.height)
-  Codec.getCodec(getConfig().codecName).encrypt(imgData)
+  imgData = Codec.createCodec(getConfig().codecName, imgData).encrypt();
+  [canvas.width, canvas.height] = [imgData.width, imgData.height]
   ctx.putImageData(imgData, 0, 0)
   return canvas.toDataURL()
 }
@@ -38,8 +39,9 @@ export async function decrypt (originImg) {
   [canvas.width, canvas.height] = [img.width, img.height]
   ctx.drawImage(img, 0, 0)
   let imgData = ctx.getImageData(0, 0, canvas.width, canvas.height)
-  Codec.getCodec(getConfig().codecName).decrypt(imgData)
-  postProcess(imgData)
+  imgData = Codec.createCodec(getConfig().codecName, imgData).decrypt()
+  postProcess(imgData);
+  [canvas.width, canvas.height] = [imgData.width, imgData.height]
   ctx.putImageData(imgData, 0, 0)
   originImg.src = canvas.toDataURL()
 }
@@ -79,18 +81,24 @@ async function loadImage (src, isCrossOrigin = false) {
 }
 
 class Codec {
-  encrypt (imgData) {}
-  decrypt (imgData) {}
+  constructor (imgData) {
+    this._imgData = imgData
+  }
+  // 加密，返回加密后的imgData
+  encrypt () {}
+  // 解密，返回解密后的imgData
+  decrypt () {}
 }
-Codec._codecs = {}
-Codec.getCodec = function (name) {
-  return name in Codec._codecs ? Codec._codecs[name] : Codec._codecs.MoveRgbCodec
+Codec._codecClasses = {}
+Codec.createCodec = function (name, imgData) {
+  let CodecClass = name in Codec._codecClasses ? Codec._codecClasses[name] : Codec._codecClasses.MoveRgbCodec
+  return new CodecClass(imgData)
 }
 
 // 反色
-class InvertRgbCodec {
-  encrypt (imgData) { this._invertColor(imgData) }
-  decrypt (imgData) { this._invertColor(imgData) }
+class InvertRgbCodec extends Codec {
+  encrypt () { return this._invertColor(this._imgData) }
+  decrypt () { return this._invertColor(this._imgData) }
   _invertColor (imgData) {
     let data = imgData.data
     for (let i = 0; i < data.length; i += 4) {
@@ -98,14 +106,15 @@ class InvertRgbCodec {
       data[i + 1] = ~data[i + 1] & 0xFF
       data[i + 2] = ~data[i + 2] & 0xFF
     }
+    return imgData
   }
 }
-Codec._codecs.InvertRgbCodec = new InvertRgbCodec()
+Codec._codecClasses.InvertRgbCodec = InvertRgbCodec
 
 // 将RGB值随机移动
-class MoveRgbCodec {
-  encrypt (imgData) {
-    let data = imgData.data
+class MoveRgbCodec extends Codec {
+  encrypt () {
+    let data = this._imgData.data
     let nRgbs = data.length / 4 * 3
     let seq = new RandomSequence(nRgbs, getConfig().randomSeed)
     let buffer = new Uint8ClampedArray(nRgbs)
@@ -120,10 +129,11 @@ class MoveRgbCodec {
       data[i + 1] = buffer[j + 1]
       data[i + 2] = buffer[j + 2]
     }
+    return this._imgData
   }
 
-  decrypt (imgData) {
-    let data = imgData.data
+  decrypt () {
+    let data = this._imgData.data
     let nRgbs = data.length / 4 * 3
     let buffer = new Uint8ClampedArray(nRgbs)
     for (let i = 0, j = 0; i < data.length; i += 4, j += 3) {
@@ -138,14 +148,19 @@ class MoveRgbCodec {
       data[i + 1] = buffer[seq.next()]
       data[i + 2] = buffer[seq.next()]
     }
+    return this._imgData
   }
 }
-Codec._codecs.MoveRgbCodec = new MoveRgbCodec()
+Codec._codecClasses.MoveRgbCodec = MoveRgbCodec
 
 // 将8x8像素块随机移动
-class Move8x8BlockCodec {
-  // TODO 实现
-  encrypt (imgData) {}
-  decrypt (imgData) {}
+class Move8x8BlockCodec extends Codec {
+  encrypt () {
+
+  }
+
+  decrypt () {
+
+  }
 }
-Codec._codecs.Move8x8BlockCodec = new Move8x8BlockCodec()
+Codec._codecClasses.Move8x8BlockCodec = Move8x8BlockCodec
