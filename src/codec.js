@@ -46,8 +46,14 @@ export async function decrypt (originImg) {
 
 // 解密后的处理，比如滤波
 function postProcess (imgData) {
-  // gaussianBlur(imgData)
-  medianBlur(imgData)
+  switch (getConfig().postProcess) {
+    case 'gaussianBlur':
+      gaussianBlur(imgData)
+      break
+    case 'medianBlur':
+      medianBlur(imgData)
+      break
+  }
 }
 
 function getImgSrcToDecrypt (originImg) {
