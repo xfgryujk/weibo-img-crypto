@@ -28,7 +28,7 @@
               <el-select v-model="form.codecName" placeholder="无">
                 <el-option label="反色" value="InvertRgbCodec"></el-option>
                 <el-option label="随机移动RGB值" value="MoveRgbCodec"></el-option>
-                <el-option label="随机移动8x8像素块" value="Move8x8BlockCodec"></el-option>
+                <el-option label="随机移动8x8 ARGB块" value="Move8x8BlockCodec"></el-option>
               </el-select>
             </el-form-item>
             <el-form-item label="随机种子">
@@ -95,7 +95,7 @@ export default {
 </script>
 
 <style scoped>
-p {
+.help p {
   margin-bottom: 1em
 }
 </style>

@@ -5,7 +5,7 @@ export function getConfig () {
     enableEncryption: true,
     enableDecryption: true,
     noWaterMark: true,
-    codecName: 'MoveRgbCodec',
+    codecName: 'Move8x8BlockCodec',
     randomSeed: DEFAULT_SEED,
     postProcess: ''
   }, JSON.parse(window.localStorage.wbImgCryptoConfig || '{}'))
