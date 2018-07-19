@@ -1,4 +1,3 @@
-import { Notification } from 'element-ui'
 import {encrypt, decrypt} from './codec'
 import {getConfig} from './config'
 
@@ -6,9 +5,6 @@ export function initHooks () {
   hookUpload()
   hookContextMenu()
 }
-
-let canvas = document.createElement('canvas')
-let ctx = canvas.getContext('2d')
 
 // Hook上传图片相关函数
 function hookUpload () {
@@ -44,14 +40,6 @@ function hookUpload () {
       if (handle.isAborted) {
         return
       }
-
-      // 加密
-      [canvas.width, canvas.height] = [img.width, img.height]
-      ctx.drawImage(img, 0, 0)
-      let imgData = ctx.getImageData(0, 0, img.width, img.height)
-      encrypt(imgData.data)
-      ctx.putImageData(imgData, 0, 0)
-
       // 去水印
       if (getConfig().noWaterMark) {
         args.args.url = 0
@@ -59,8 +47,8 @@ function hookUpload () {
         args.args.logo = ''
         args.args.nick = 0
       }
-      // 替换图片
-      imgDataInput.value = canvas.toDataURL().split(',')[1]
+      // 加密、替换图片
+      imgDataInput.value = encrypt(img).split(',')[1]
       handle.abort = originalIjax(args).abort
     }
     img.src = 'data:image;base64,' + imgDataInput.value
@@ -74,32 +62,7 @@ function hookContextMenu () {
     if (getConfig().enableDecryption &&
         event.target instanceof window.Image) {
       // event.preventDefault() // 为了右键保存图片这里先注释掉了
-      let originImg = event.target
-
-      // 跨域
-      let img = new window.Image()
-      img.crossOrigin = 'anonymous'
-      img.onerror = () => Notification.error({
-        title: '解密图片',
-        message: '载入图片失败，可能是跨域问题？',
-        position: 'bottom-left',
-        duration: 3000
-      })
-      img.onload = () => {
-        [canvas.width, canvas.height] = [img.width, img.height]
-        ctx.drawImage(img, 0, 0)
-
-        // 解密
-        let imgData = ctx.getImageData(0, 0, canvas.width, canvas.height)
-        decrypt(imgData.data)
-        ctx.putImageData(imgData, 0, 0)
-        originImg.src = canvas.toDataURL()
-      }
-
-      if (!originImg.src.startsWith('data:')) { // 如果是'data:'开头说明已经解密过了
-        // 防缓存
-        img.src = originImg.src + (originImg.src.indexOf('?') === -1 ? '?_t=' : '&_t=') + new Date().getTime()
-      }
+      decrypt(event.target)
     }
   })
 }

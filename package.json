@@ -1,6 +1,6 @@
 {
   "name": "weibo-img-crypto",
-  "version": "1.1.1",
+  "version": "1.2.0",
   "description": "Automatically encrypt images before uploading them to Weibo.",
   "author": "xfgryujk <xfgryujk@126.com>",
   "private": true,
@@ -28,6 +28,8 @@
     "babel-loader": "^7.1.5",
     "babel-plugin-transform-runtime": "^6.23.0",
     "babel-preset-env": "^1.7.0",
+    "css-loader": "^1.0.0",
+    "style-loader": "^0.21.0",
     "vue-loader": "^15.2.4",
     "vue-template-compiler": "^2.5.16",
     "webpack": "^4.16.0",

@@ -15,7 +15,9 @@ function main () {
   initGui()
 }
 
-if (!window.isWbImgCryptoLoaded) {
+if (window.isWbImgCryptoLoaded) {
+  window.alert('weibo-img-crypto 已经加载，请不要重复加载')
+} else {
   window.isWbImgCryptoLoaded = true
   main()
 }
