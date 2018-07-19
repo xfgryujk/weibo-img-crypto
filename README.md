@@ -14,18 +14,15 @@ javascript:fetch('https://raw.githubusercontent.com/xfgryujk/weibo-img-crypto/ma
 ### 方法 2，适合长期使用
 首先安装 [Tampermonkey](http://tampermonkey.net/) 浏览器扩展，然后[去 Greasy Fork 添加 weibo-img-crypto 脚本](https://greasyfork.org/zh-CN/scripts/370359-weibo-img-crypto)。这样访问微博时会自动执行方法 1 的代码
 
-## 高级
+## 算法说明
 加密的原理是把 RGB 数据随机移动到一个新位置，所以加密解密时的随机种子必须一样。默认的随机种子是 `114514`，可以在设置界面修改随机种子
 
-由于 JPEG 是有损压缩，解密后的图片有高频噪声，不过可以被人眼自动过滤。理论上如果数据无损，解密后的图片和原图一样 ~~（都怪渣浪不用 PNG）~~
+推荐使用`随机移动 8x8 ARGB 块`算法，这样不会出现有损压缩再解密造成的高频噪声。`随机移动 RGB 值`算法会出现有损压缩再解密造成的高频噪声。至于反色算法~~只是作者平时用来看某些博主的色图用的~~，不算加密
 
 ## 兼容性
 目前不支持 GIF 图，以后可能支持
 
 只在 Chrome、Edge 浏览器测试过，不保证支持其他浏览器 ~~（IE 是什么？我可不知道）~~
-
-## 其他要注意的
-如果加了水印，解密后的图片会有杂色
 
 ## 效果
 加密后：
@@ -58,3 +55,6 @@ javascript:fetch('https://raw.githubusercontent.com/xfgryujk/weibo-img-crypto/ma
 
 ### 默认随机种子 114514 是什么意思？
 作者的恶趣味，自行百度
+
+## TODO
+* 可以从微博之外选择加密解密的图片
