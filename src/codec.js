@@ -1,7 +1,7 @@
 import {Notification} from 'element-ui'
 import {RandomSequence} from './random'
 import {getConfig} from './config'
-import {splitChannels, mergeChannels, gaussianBlur, medianBlur} from './imgproc'
+import {gaussianBlur, medianBlur} from './imgproc'
 
 let canvas = document.createElement('canvas')
 let ctx = canvas.getContext('2d')
@@ -153,18 +153,18 @@ class MoveRgbCodec extends Codec {
 }
 Codec._codecClasses.MoveRgbCodec = MoveRgbCodec
 
-// 将8x8 ARGB块随机移动
+// 将8x8 像素块随机移动
 // 由于JPEG是分成8x8的小块在块内压缩，分成8x8小块处理可以避免压缩再解密造成的高频噪声
 class Move8x8BlockCodec extends Codec {
   encrypt () {
-    return this._doCommon((result, iChannel, blockX, blockY, newBlockX, newBlockY) =>
-      this._copyBlock(iChannel, result, newBlockX, newBlockY, this._imgData, blockX, blockY)
+    return this._doCommon((result, blockX, blockY, newBlockX, newBlockY) =>
+      this._copyBlock(result, newBlockX, newBlockY, this._imgData, blockX, blockY)
     )
   }
 
   decrypt () {
-    return this._doCommon((result, iChannel, blockX, blockY, newBlockX, newBlockY) =>
-      this._copyBlock(iChannel, result, blockX, blockY, this._imgData, newBlockX, newBlockY)
+    return this._doCommon((result, blockX, blockY, newBlockX, newBlockY) =>
+      this._copyBlock(result, blockX, blockY, this._imgData, newBlockX, newBlockY)
     )
   }
 
@@ -174,25 +174,23 @@ class Move8x8BlockCodec extends Codec {
     let blockHeight = Math.floor(this._imgData.height / 8)
     let result = ctx.createImageData(blockWidth * 8, blockHeight * 8)
     let seq = new RandomSequence(blockWidth * blockHeight, getConfig().randomSeed)
-    for (let iChannel = 0; iChannel < 4; iChannel++) {
-      for (let blockY = 0; blockY < blockHeight; blockY++) {
-        for (let blockX = 0; blockX < blockWidth; blockX++) {
-          let index = seq.next()
-          let newBlockX = index % blockWidth
-          let newBlockY = Math.floor(index / blockWidth)
-          handleCopy(result, iChannel, blockX, blockY, newBlockX, newBlockY)
-        }
+    for (let blockY = 0; blockY < blockHeight; blockY++) {
+      for (let blockX = 0; blockX < blockWidth; blockX++) {
+        let index = seq.next()
+        let newBlockX = index % blockWidth
+        let newBlockY = Math.floor(index / blockWidth)
+        handleCopy(result, blockX, blockY, newBlockX, newBlockY)
       }
     }
     return result
   }
 
-  _copyBlock (iChannel, dstImgData, dstBlockX, dstBlockY, srcImgData, srcBlockX, srcBlockY) {
-    let iDstStart = (dstBlockY * dstImgData.width + dstBlockX) * 8 * 4 + iChannel
-    let iSrcStart = (srcBlockY * srcImgData.width + srcBlockX) * 8 * 4 + iChannel
+  _copyBlock (dstImgData, dstBlockX, dstBlockY, srcImgData, srcBlockX, srcBlockY) {
+    let iDstStart = (dstBlockY * dstImgData.width + dstBlockX) * 8 * 4
+    let iSrcStart = (srcBlockY * srcImgData.width + srcBlockX) * 8 * 4
     for (let y = 0; y < 8; y++) {
-      for (let x = 0; x < 8; x++) {
-        dstImgData.data[iDstStart + x * 4] = srcImgData.data[iSrcStart + x * 4]
+      for (let i = 0; i < 8 * 4; i++) {
+        dstImgData.data[iDstStart + i] = srcImgData.data[iSrcStart + i]
       }
       iDstStart += dstImgData.width * 4
       iSrcStart += srcImgData.width * 4
