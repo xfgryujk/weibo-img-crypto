@@ -1,6 +1,6 @@
 {
   "name": "weibo-img-crypto",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Automatically encrypt images before uploading them to Weibo.",
   "author": "xfgryujk <xfgryujk@126.com>",
   "private": true,
