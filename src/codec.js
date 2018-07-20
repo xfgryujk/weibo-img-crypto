@@ -8,13 +8,9 @@ let ctx = canvas.getContext('2d')
 
 // 加密图片，返回data URL
 export function encrypt (img) {
-  [canvas.width, canvas.height] = [img.width, img.height]
-  ctx.drawImage(img, 0, 0)
-  let imgData = ctx.getImageData(0, 0, img.width, img.height)
-  imgData = Codec.createCodec(getConfig().codecName, imgData).encrypt();
-  [canvas.width, canvas.height] = [imgData.width, imgData.height]
-  ctx.putImageData(imgData, 0, 0)
-  return canvas.toDataURL()
+  return doCodecCommon(img, imgData => 
+    Codec.createCodec(getConfig().codecName, imgData).encrypt()
+  )
 }
 
 // 解密图片，直接替换img.src
@@ -35,15 +31,25 @@ export async function decrypt (originImg) {
     return
   }
 
-  // 解密
+  originImg.src = doCodecCommon(img, imgData => {
+    imgData = Codec.createCodec(getConfig().codecName, imgData).decrypt()
+    postProcess(imgData);
+    return imgData
+  })
+}
+
+// 加密解密通用的部分，返回处理后的data URL。handleImgData传入imgData，返回新的imgData
+function doCodecCommon (img, handleImgData) {
   [canvas.width, canvas.height] = [img.width, img.height]
+  // 微博会把透明图片和白色混合
+  ctx.fillStyle = '#fff'
+  ctx.fillRect(0, 0, img.width, img.height) 
   ctx.drawImage(img, 0, 0)
   let imgData = ctx.getImageData(0, 0, canvas.width, canvas.height)
-  imgData = Codec.createCodec(getConfig().codecName, imgData).decrypt()
-  postProcess(imgData);
+  imgData = handleImgData(imgData);
   [canvas.width, canvas.height] = [imgData.width, imgData.height]
   ctx.putImageData(imgData, 0, 0)
-  originImg.src = canvas.toDataURL()
+  return canvas.toDataURL()
 }
 
 // 解密后的处理，比如滤波

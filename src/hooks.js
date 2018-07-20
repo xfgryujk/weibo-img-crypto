@@ -1,3 +1,4 @@
+import {Notification} from 'element-ui'
 import {encrypt, decrypt} from './codec'
 import {getConfig} from './config'
 
@@ -7,7 +8,7 @@ export function initHooks () {
 }
 
 // Hook上传图片相关函数
-function hookUpload () {
+async function hookUpload () {
   let isUploadingGif = false
 
   // Hook读取图片函数，用来判断MIME type
@@ -17,10 +18,27 @@ function hookUpload () {
     originalReadAsDataURL.call(this, file)
   }
 
+  // 等待微博模块初始化
+  let originalIjax
+  let retryCount = 0
+  while (true) {
+    try {
+      originalIjax = window.STK.namespace.v6home.core.io.ijax
+      break
+    } catch (e) {
+      if (retryCount++ > 10) {
+        Notification.error({
+          title: '初始化',
+          message: 'Hook上传函数失败，可能当前页面不是微博主页？' + e,
+          position: 'bottom-left'
+        })
+        return
+      }
+      await sleep(500)
+    }
+  }
   // Hook微博HTTP请求函数，用来加密和去水印
-  let root = window.STK.namespace ? window.STK.namespace.v6home : window.STK // 用来兼容查看原图页面
-  let originalIjax = root.core.io.ijax
-  root.core.io.ijax = function (args) {
+  window.STK.namespace.v6home.core.io.ijax = function (args) {
     if (!getConfig().enableEncryption ||
         !args.url.endsWith('/pic_upload.php') ||
         isUploadingGif) { // 暂时不支持GIF
@@ -54,6 +72,12 @@ function hookUpload () {
     img.src = 'data:image;base64,' + imgDataInput.value
     return handle
   }
+}
+
+async function sleep (time) {
+  return new Promise((resolve, reject) => {
+    window.setTimeout(resolve, time)
+  })
 }
 
 // 监听右键菜单

@@ -6,7 +6,7 @@
       </a>
     </el-tooltip>
 
-    <el-dialog title="weibo-img-crypto v1.2.0" :visible.sync="dialogVisible">
+    <el-dialog title="weibo-img-crypto v1.2.1" :visible.sync="dialogVisible">
       <el-tabs>
         <el-tab-pane label="基础">
           <el-form label-width="100px">
@@ -28,7 +28,7 @@
               <el-select v-model="form.codecName" placeholder="无">
                 <el-option label="反色" value="InvertRgbCodec"></el-option>
                 <el-option label="随机移动RGB值" value="MoveRgbCodec"></el-option>
-                <el-option label="随机移动8x8 像素块" value="Move8x8BlockCodec"></el-option>
+                <el-option label="随机移动8x8像素块" value="Move8x8BlockCodec"></el-option>
               </el-select>
             </el-form-item>
             <el-form-item label="随机种子">
