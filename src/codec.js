@@ -8,7 +8,7 @@ let ctx = canvas.getContext('2d')
 
 // 加密图片，返回data URL
 export function encrypt (img) {
-  return doCodecCommon(img, imgData => 
+  return doCodecCommon(img, imgData =>
     Codec.createCodec(getConfig().codecName, imgData).encrypt()
   )
 }
@@ -33,7 +33,7 @@ export async function decrypt (originImg) {
 
   originImg.src = doCodecCommon(img, imgData => {
     imgData = Codec.createCodec(getConfig().codecName, imgData).decrypt()
-    postProcess(imgData);
+    postProcess(imgData)
     return imgData
   })
 }
@@ -43,7 +43,7 @@ function doCodecCommon (img, handleImgData) {
   [canvas.width, canvas.height] = [img.width, img.height]
   // 微博会把透明图片和白色混合
   ctx.fillStyle = '#fff'
-  ctx.fillRect(0, 0, img.width, img.height) 
+  ctx.fillRect(0, 0, img.width, img.height)
   ctx.drawImage(img, 0, 0)
   let imgData = ctx.getImageData(0, 0, canvas.width, canvas.height)
   imgData = handleImgData(imgData);
@@ -159,7 +159,7 @@ class MoveRgbCodec extends Codec {
 }
 Codec._codecClasses.MoveRgbCodec = MoveRgbCodec
 
-// 将8x8 像素块随机移动
+// 将8x8像素块随机移动
 // 由于JPEG是分成8x8的小块在块内压缩，分成8x8小块处理可以避免压缩再解密造成的高频噪声
 class Move8x8BlockCodec extends Codec {
   encrypt () {
