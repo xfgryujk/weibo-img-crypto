@@ -6,7 +6,7 @@ export function initGui () {
 }
 
 function addButton () {
-  let button = document.createElement('a')
+  let button = document.createElement('div')
   document.body.appendChild(button)
   /* eslint-disable no-new */
   new Vue({

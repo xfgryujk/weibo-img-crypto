@@ -6,7 +6,7 @@
       </a>
     </el-tooltip>
 
-    <el-dialog title="weibo-img-crypto v1.2.2" :visible.sync="dialogVisible">
+    <el-dialog title="weibo-img-crypto v1.3.0" :visible.sync="dialogVisible">
       <el-tabs>
         <el-tab-pane label="基础">
           <el-form label-width="100px">
@@ -32,7 +32,7 @@
               </el-select>
             </el-form-item>
             <el-form-item label="随机种子">
-              <el-input v-model="form.randomSeed" type="number"></el-input>
+              <el-input v-model="form.randomSeed"></el-input>
             </el-form-item>
             <el-form-item label="解密后处理">
               <el-select v-model="form.postProcess" placeholder="无">
@@ -44,8 +44,12 @@
           </el-form>
         </el-tab-pane>
 
+        <el-tab-pane label="选择图片">
+          <select-img></select-img>
+        </el-tab-pane>
+
         <el-tab-pane label="帮助和关于">
-          <div class="help">
+          <div class="child-mb">
             <p>
               使用方法：上传图片时自动加密，在图片上点击鼠标右键自动解密。加密解密时的算法、随机种子必须一致。如果加了水印，解密后的图片会有杂色，开启自动去水印会在上传时临时关闭你的水印。一般情况下不建议添加解密后处理，如果你实在忍受不了解密后的噪声再添加
             </p>
@@ -72,11 +76,12 @@
 
 <script>
 import {getConfig, setConfig} from '../config'
+import SelectImg from './select-img'
 
 export default {
-  props: [
-    'isButtonFloat'
-  ],
+  components: {
+    SelectImg
+  },
   data () {
     return {
       dialogVisible: false,
@@ -90,7 +95,6 @@ export default {
     },
     onOk () {
       this.dialogVisible = false
-      this.form.randomSeed = parseInt(this.form.randomSeed)
       setConfig(this.form)
     }
   }
@@ -98,7 +102,7 @@ export default {
 </script>
 
 <style scoped>
-.help p {
+.child-mb * {
   margin-bottom: 1em
 }
 </style>

@@ -13,11 +13,8 @@ export function encrypt (img) {
   )
 }
 
-// 解密图片，直接替换img.src
+// 解密图片，返回data URL
 export async function decrypt (originImg) {
-  if (originImg.src.startsWith('data:')) { // 如果是'data:'开头说明已经解密过了
-    return
-  }
   let img
   try {
     img = await loadImage(getImgSrcToDecrypt(originImg), true)
@@ -28,10 +25,9 @@ export async function decrypt (originImg) {
       position: 'bottom-left',
       duration: 3000
     })
-    return
+    return ''
   }
-
-  originImg.src = doCodecCommon(img, imgData => {
+  return doCodecCommon(img, imgData => {
     imgData = Codec.createCodec(getConfig().codecName, imgData).decrypt()
     postProcess(imgData)
     return imgData
@@ -69,8 +65,10 @@ function getImgSrcToDecrypt (originImg) {
   const IMG_URL_REG = /^(https?:\/\/wx\d+\.sinaimg\.cn\/)mw\d+(\/.*)$/i
   let match = IMG_URL_REG.exec(originImg.src)
   let src = match ? `${match[1]}large${match[2]}` : originImg.src
-  // 防缓存，为了跨域
-  src += (originImg.src.indexOf('?') === -1 ? '?_t=' : '&_t=') + new Date().getTime()
+  if (!originImg.src.startsWith('data:')) {
+    // 防缓存，为了跨域
+    src += (originImg.src.indexOf('?') === -1 ? '?_t=' : '&_t=') + new Date().getTime()
+  }
   return src
 }
 
