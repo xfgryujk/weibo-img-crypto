@@ -1,4 +1,4 @@
-const DEFAULT_SEED = 114514
+const DEFAULT_SEED = '114514'
 
 export function getConfig () {
   return Object.assign({

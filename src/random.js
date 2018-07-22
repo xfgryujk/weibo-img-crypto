@@ -1,7 +1,28 @@
 // 从谷歌V8引擎抄来的 https://github.com/v8/v8/blob/dae6dfe08ba9810abbe7eee81f7c58e999ae8525/src/math.js#L144
 export class Random {
   constructor (seed = new Date().getTime()) {
+    this._setRngstate(seed)
+  }
+
+  // seed可以是字符串
+  _setRngstate (seed) {
+    // JS真没有好判断字符串是数字的办法
+    if (/^-?\d{1,10}$/.test(seed) && seed >= -0x80000000 && seed <= 0x7FFFFFFF) {
+      seed = parseInt(seed)
+    } else {
+      seed = this._hashCode(seed)
+    }
     this._rngstate = [seed & 0xFFFF, seed >>> 16]
+  }
+
+  // 抄Java的
+  _hashCode (str) {
+    let hash = 0
+    // JS的字符串是UTF-16编码
+    for (let i = 0; i < str.length; i++) {
+      hash = (hash * 31 + str.charCodeAt(i)) & 0xFFFFFFFF
+    }
+    return hash
   }
 
   // 返回[0, 1)

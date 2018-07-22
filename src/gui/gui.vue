@@ -32,7 +32,7 @@
               </el-select>
             </el-form-item>
             <el-form-item label="随机种子">
-              <el-input v-model="form.randomSeed" type="number"></el-input>
+              <el-input v-model="form.randomSeed"></el-input>
             </el-form-item>
             <el-form-item label="解密后处理">
               <el-select v-model="form.postProcess" placeholder="无">
@@ -95,7 +95,6 @@ export default {
     },
     onOk () {
       this.dialogVisible = false
-      this.form.randomSeed = parseInt(this.form.randomSeed)
       setConfig(this.form)
     }
   }
