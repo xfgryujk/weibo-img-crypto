@@ -55,6 +55,3 @@ javascript:fetch('https://raw.githubusercontent.com/xfgryujk/weibo-img-crypto/ma
 
 ### 默认随机种子 114514 是什么意思？
 作者的恶趣味，自行百度
-
-## TODO
-* 可以从微博之外选择加密解密的图片

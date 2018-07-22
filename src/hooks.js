@@ -83,10 +83,18 @@ async function sleep (time) {
 // 监听右键菜单
 function hookContextMenu () {
   document.addEventListener('contextmenu', event => {
+    let originImg = event.target
     if (getConfig().enableDecryption &&
-        event.target instanceof window.Image) {
+        originImg instanceof window.Image) {
       // event.preventDefault() // 为了右键保存图片这里先注释掉了
-      decrypt(event.target)
+      if (originImg.src.startsWith('data:')) { // 如果是'data:'开头说明已经解密过了
+        return
+      }
+      decrypt(originImg).then(url => {
+        if (url) {
+          originImg.src = url
+        }
+      })
     }
   })
 }
