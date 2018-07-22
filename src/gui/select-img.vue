@@ -15,6 +15,12 @@
         </el-upload>
       </el-form-item>
     </el-form>
+
+    <el-dialog :title="largeImgTitle" :visible.sync="largeImgVisible" append-to-body>
+      <a href="#" @click.prevent="onClickLargeImg">
+        <img class="image" :src="largeImgUrl">
+      </a>
+    </el-dialog>
   </div>
 </template>
 
@@ -25,7 +31,11 @@ export default {
   data () {
     return {
       isEncryption: true,
-      fileList: []
+      fileList: [],
+      largeImgTitle: '',
+      largeImgVisible: false,
+      largeImgUrl: '',
+      largeImgUrlShort: ''
     }
   },
   methods: {
@@ -63,21 +73,30 @@ export default {
       this.fileList = fileList
     },
     onPreview (file) {
+      this.largeImgTitle = file.name
+      this.largeImgUrl = file.url
+      window.URL.revokeObjectURL(this.largeImgUrlShort)
+      this.largeImgUrlShort = ''
+      this.largeImgVisible = true
+    },
+    onClickLargeImg () {
       let url
-      if (file.url.startsWith('data:')) {
-        // file.url太长了，浏览器地址栏装不下
-        let [memePart, base64Str] = file.url.split(',')
+      if (this.largeImgUrlShort) {
+        url = this.largeImgUrlShort
+      } else if (this.largeImgUrl.startsWith('data:')) {
+        // Chrome和Edge无法打开data URL？
+        let [memePart, base64Str] = this.largeImgUrl.split(',')
         let meme = /:(.*?);/.exec(memePart)[1]
         let dataStr = atob(base64Str)
         let data = new Uint8Array(dataStr.length)
         for (let i = 0; i < dataStr.length; i++) {
           data[i] = dataStr.charCodeAt(i)
         }
-        url = window.URL.createObjectURL(new Blob([data], {type: meme}))
+        url = this.largeImgUrlShort = window.URL.createObjectURL(new Blob([data], {type: meme}))
       } else {
-        url = file.url
+        url = this.largeImgUrlShort = this.largeImgUrl
       }
-      window.open(url)
+      window.open(url) // Edge还是不允许打开blob URL，没办法了
     }
   }
 }
@@ -85,6 +104,10 @@ export default {
 
 <style scoped>
 .mb {
-  margin-bottom: 1em
+  margin-bottom: 1em;
+}
+
+.image {
+  width: 100%;
 }
 </style>

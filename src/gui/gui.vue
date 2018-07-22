@@ -1,12 +1,12 @@
 <template>
   <div>
     <el-tooltip class="item" content="发色图救救北极熊">
-      <a href="#" @click.prevent="openGui" style="position: fixed; left: 0; bottom: 0">
+      <a href="#" @click.prevent="openGui" class="gui-button">
         <img src="https://ww1.sinaimg.cn/mw690/be15a4ddjw8fbet7h4rpoj209z0c7q39.jpg" width="40px" height="49px">
       </a>
     </el-tooltip>
 
-    <el-dialog title="weibo-img-crypto v1.3.0" :visible.sync="dialogVisible">
+    <el-dialog title="weibo-img-crypto v1.3.1" :visible.sync="dialogVisible">
       <el-tabs>
         <el-tab-pane label="基础">
           <el-form label-width="100px">
@@ -102,7 +102,13 @@ export default {
 </script>
 
 <style scoped>
+.gui-button {
+  position: fixed;
+  left: 0;
+  bottom: 0;
+}
+
 .child-mb * {
-  margin-bottom: 1em
+  margin-bottom: 1em;
 }
 </style>
