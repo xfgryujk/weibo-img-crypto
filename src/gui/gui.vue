@@ -6,7 +6,7 @@
       </a>
     </el-tooltip>
 
-    <el-dialog title="weibo-img-crypto v1.3.0" :visible.sync="dialogVisible">
+    <el-dialog title="weibo-img-crypto v1.3.1" :visible.sync="dialogVisible">
       <el-tabs>
         <el-tab-pane label="基础">
           <el-form label-width="100px">
