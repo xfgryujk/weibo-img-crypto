@@ -98,7 +98,7 @@ function copy24BitsTo32Bits (dstData, srcData, width, height) {
   for (let y = 1; y < height - 1; y++) {
     let iDst = (y * width + 1) * 4
     let iSrc = (y * width + 1) * 3
-    for (let x = 0; x < width - 1; x++, iDst += 4, iSrc += 3) {
+    for (let x = 1; x < width - 1; x++, iDst += 4, iSrc += 3) {
       dstData[iDst] = srcData[iSrc]
       dstData[iDst + 1] = srcData[iSrc + 1]
       dstData[iDst + 2] = srcData[iSrc + 2]
