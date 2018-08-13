@@ -86,10 +86,10 @@ function hookContextMenu () {
     let originImg = event.target
     if (getConfig().enableDecryption &&
         originImg instanceof window.Image) {
-      // event.preventDefault() // 为了右键保存图片这里先注释掉了
       if (originImg.src.startsWith('data:')) { // 如果是'data:'开头说明已经解密过了
         return
       }
+      event.preventDefault() // 解密时屏蔽右键菜单
       decrypt(originImg).then(url => {
         if (url) {
           originImg.src = url
