@@ -100,7 +100,7 @@ Codec.createCodec = function (name, imgData) {
 }
 
 // 反色
-class InvertRgbCodec extends Codec {
+class InvertCodec extends Codec {
   encrypt () { return this._invertColor(this._imgData) }
   decrypt () { return this._invertColor(this._imgData) }
   _invertColor (imgData) {
@@ -113,10 +113,10 @@ class InvertRgbCodec extends Codec {
     return imgData
   }
 }
-Codec._codecClasses.InvertRgbCodec = InvertRgbCodec
+Codec._codecClasses.InvertCodec = InvertCodec
 
-// 将RGB值随机移动
-class MoveRgbCodec extends Codec {
+// RGB随机置乱
+class ShuffleRgbCodec extends Codec {
   encrypt () {
     let data = this._imgData.data
     let nRgbs = data.length / 4 * 3
@@ -155,11 +155,11 @@ class MoveRgbCodec extends Codec {
     return this._imgData
   }
 }
-Codec._codecClasses.MoveRgbCodec = MoveRgbCodec
+Codec._codecClasses.ShuffleRgbCodec = ShuffleRgbCodec
 
-// 将8x8像素块随机移动
-// 由于JPEG是分成8x8的小块在块内压缩，分成8x8小块处理可以避免压缩再解密造成的高频噪声
-class Move8x8BlockCodec extends Codec {
+// 块随机置乱
+// 由于JPEG是分成8x8的块在块内压缩，分成8x8块处理可以避免压缩再解密造成的高频噪声
+class ShuffleBlockCodec extends Codec {
   encrypt () {
     return this._doCommon((result, blockX, blockY, newBlockX, newBlockY) =>
       this._copyBlock(result, newBlockX, newBlockY, this._imgData, blockX, blockY)
@@ -201,4 +201,4 @@ class Move8x8BlockCodec extends Codec {
     }
   }
 }
-Codec._codecClasses.Move8x8BlockCodec = Move8x8BlockCodec
+Codec._codecClasses.ShuffleBlockCodec = ShuffleBlockCodec
