@@ -101,16 +101,16 @@ Codec.createCodec = function (name, imgData) {
 
 // 反色
 class InvertCodec extends Codec {
-  encrypt () { return this._invertColor(this._imgData) }
-  decrypt () { return this._invertColor(this._imgData) }
-  _invertColor (imgData) {
-    let data = imgData.data
+  encrypt () { return this._invertColor() }
+  decrypt () { return this._invertColor() }
+  _invertColor () {
+    let data = this._imgData.data
     for (let i = 0; i < data.length; i += 4) {
       data[i] = ~data[i] & 0xFF
       data[i + 1] = ~data[i + 1] & 0xFF
       data[i + 2] = ~data[i + 2] & 0xFF
     }
-    return imgData
+    return this._imgData
   }
 }
 Codec._codecClasses.InvertCodec = InvertCodec
@@ -202,3 +202,36 @@ class ShuffleBlockCodec extends Codec {
   }
 }
 Codec._codecClasses.ShuffleBlockCodec = ShuffleBlockCodec
+
+// 半反色
+class HalfInvertCodec extends Codec {
+  encrypt () { return this._halfInvertColor() }
+  decrypt () { return this._halfInvertColor() }
+
+  _halfInvertColor () {
+    let invertFirst = true
+    for (let y = 0; y < this._imgData.height; y += 8) {
+      let height = Math.min(8, this._imgData.height - y)
+      for (let x = invertFirst ? 0 : 8; x < this._imgData.width; x += 16) {
+        let width = Math.min(8, this._imgData.width - x)
+        this._invertColor(x, y, width, height)
+      }
+      invertFirst = !invertFirst
+    }
+    return this._imgData
+  }
+
+  _invertColor (x, y, width, height) {
+    let data = this._imgData.data
+    let iStart = (y * this._imgData.width + x) * 4
+    for (let y = 0; y < height; y++) {
+      for (let i = 0; i < width * 4; i += 4) {
+        data[iStart + i] = ~data[iStart + i] & 0xFF
+        data[iStart + i + 1] = ~data[iStart + i + 1] & 0xFF
+        data[iStart + i + 2] = ~data[iStart + i + 2] & 0xFF
+      }
+      iStart += this._imgData.width * 4
+    }
+  }
+}
+Codec._codecClasses.HalfInvertCodec = HalfInvertCodec
