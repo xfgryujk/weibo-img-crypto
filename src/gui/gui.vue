@@ -6,7 +6,7 @@
       </a>
     </el-tooltip>
 
-    <el-dialog title="weibo-img-crypto v1.3.3" :visible.sync="dialogVisible">
+    <el-dialog title="weibo-img-crypto v1.4.0" :visible.sync="dialogVisible">
       <el-tabs>
         <el-tab-pane label="基础">
           <el-form label-width="100px">
@@ -26,9 +26,10 @@
           <el-form label-width="100px">
             <el-form-item label="算法">
               <el-select v-model="form.codecName" placeholder="无">
-                <el-option label="反色" value="InvertRgbCodec"></el-option>
-                <el-option label="随机移动RGB值" value="MoveRgbCodec"></el-option>
-                <el-option label="随机移动8x8像素块" value="Move8x8BlockCodec"></el-option>
+                <el-option label="反色" value="InvertCodec"></el-option>
+                <el-option label="RGB随机置乱" value="ShuffleRgbCodec"></el-option>
+                <el-option label="块随机置乱" value="ShuffleBlockCodec"></el-option>
+                <el-option label="半反色" value="HalfInvertCodec"></el-option>
               </el-select>
             </el-form-item>
             <el-form-item label="随机种子">
@@ -54,7 +55,7 @@
               使用方法：上传图片时自动加密，在图片上点击鼠标右键自动解密。加密解密时的算法、随机种子必须一致。如果加了水印，解密后的图片会有杂色，开启自动去水印会在上传时临时关闭你的水印。一般情况下不建议添加解密后处理，如果你实在忍受不了解密后的噪声再添加
             </p>
             <p>
-              算法说明：推荐使用随机移动 8x8 像素块算法，这样不会出现有损压缩再解密造成的高频噪声。随机移动 RGB 值算法会出现有损压缩再解密造成的高频噪声。至于反色算法只是作者平时用来看某些博主的色图用的，不算加密
+              算法说明：推荐使用块随机置乱算法，这样不会出现有损压缩再解密造成的高频噪声。RGB随机置乱算法会出现有损压缩再解密造成的高频噪声。至于反色算法只是作者平时用来看某些博主的色图用的，不算加密
             </p>
             <p>
               推荐使用<a href="https://greasyfork.org/zh-CN/scripts/370359-weibo-img-crypto" target="_blank">油猴脚本</a>，可以最方便地使用 weibo-img-crypto，详情见 <a href="https://github.com/xfgryujk/weibo-img-crypto" target="_blank">GitHub 库 readme</a>
